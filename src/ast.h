@@ -34,14 +34,15 @@ struct val_type {
 		TYPE_FLOAT,
 		TYPE_NEWTYPE,
 		TYPE_STRUCT,
+		TYPE_UNION,
 	} type;
 
 	union {
-		struct ptr_type *ptr;
+		struct ref_type *ptr;
 
 		struct {
 			size_t nargs;
-			struct ptr_type *args;
+			struct ref_type *args;
 
 			struct val_type *ret_type;
 		} func;
@@ -57,11 +58,11 @@ struct val_type {
 				const char *name;
 				const val_type type;
 			} *fields;
-		} struct_;
+		} composite;
 	};
 };
 
-struct ptr_type {
+struct ref_type {
 	bool vol, mut;
 	struct val_type to;
 };
@@ -69,6 +70,7 @@ struct ptr_type {
 struct ast_expr {
 	enum {
 		EXPR_BLOCK,
+		EXPR_DECL,
 		EXPR_BINOP,
 		EXPR_UNOP,
 		EXPR_CALL,
@@ -81,7 +83,7 @@ struct ast_expr {
 		EXPR_INT_LIT,
 		EXPR_FLOAT_LIT,
 		EXPR_ARR_LIT,
-		EXPR_STRUCT_LIT,
+		EXPR_COMPOSITE_LIT,
 		EXPR_FIELD_ACCESS,
 	} type;
 
@@ -93,12 +95,18 @@ struct ast_expr {
 			size_t nlocals;
 			struct {
 				const char *name;
-				struct ptr_type type;
+				struct ref_type type;
 			} *locals;
 
 			size_t nexprs;
 			struct ast_expr *exprs;
 		} block;
+
+		struct {
+			struct ref_type type;
+			const char *name;
+			struct ast_expr *val;
+		} decl;
 
 		struct {
 			enum {
@@ -177,7 +185,7 @@ struct ast_expr {
 			size_t nargs;
 			struct {
 				const char *name;
-				struct ptr_type type;
+				struct ref_type type;
 			} *args;
 
 			struct val_type ret;
@@ -210,7 +218,7 @@ struct ast_expr {
 			struct val_type type;
 			// Must be as many as there are fields
 			struct ast_expr *vals;
-		} struct_lit;
+		} composite_lit;
 
 		struct {
 			struct ast_expr *aggr;
@@ -233,7 +241,7 @@ struct ast_toplevel {
 			size_t nargs;
 			struct {
 				const char *name;
-				struct ptr_type type;
+				struct ref_type type;
 			} *args;
 
 			struct val_type ret;
@@ -242,7 +250,7 @@ struct ast_toplevel {
 		} func;
 
 		struct {
-			struct ptr_type type;
+			struct ref_type type;
 			const char *name;
 			struct ast_expr *val;
 		} decl;
