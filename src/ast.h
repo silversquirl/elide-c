@@ -12,10 +12,13 @@ enum float_type {
 #define I_SIGNED 0x100
 
 enum int_type {
+	BOOL = 1,
+
 	U_8  = 8,
 	U_16 = 16,
 	U_32 = 32,
 	U_64 = 64,
+
 	I_8  = 8  | I_SIGNED,
 	I_16 = 16 | I_SIGNED,
 	I_32 = 32 | I_SIGNED,
