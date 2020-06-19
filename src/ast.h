@@ -9,18 +9,17 @@ enum float_type {
 	F_80,
 };
 
-struct int_type {
-	enum {
-		I_8,
-		I_16,
-		I_32,
-		I_64,
-	} size;
+#define I_SIGNED 0x100
 
-	enum {
-		SIGNED,
-		UNSIGNED,
-	} signedness;
+enum int_type {
+	U_8  = 8,
+	U_16 = 16,
+	U_32 = 32,
+	U_64 = 64,
+	I_8  = 8  | I_SIGNED,
+	I_16 = 16 | I_SIGNED,
+	I_32 = 32 | I_SIGNED,
+	I_64 = 64 | I_SIGNED,
 };
 
 struct val_type {
@@ -45,11 +44,9 @@ struct val_type {
 		} func;
 
 		enum float_type float_;
-		struct int_type int_;
+		enum int_type int_;
 
-		// TODO: I don't know how we're representing newtypes, I've just put
-		// a numeric ID here for now
-		uint64_t newtype_id;
+		const char *newtype_name;
 
 		struct {
 			size_t nfields;
@@ -186,7 +183,7 @@ struct ast_expr {
 		} func;
 
 		struct {
-			struct int_type type;
+			enum int_type type;
 			union {
 				uint64_t u;
 				int64_t i;
@@ -219,7 +216,7 @@ struct ast_expr {
 	}
 };
 
-struct ast_expr_top {
+struct ast_toplevel {
 	enum {
 		EXPRTOP_FUNC,
 		EXPRTOP_DECL,
@@ -248,8 +245,8 @@ struct ast_expr_top {
 		} decl;
 
 		struct {
-			size_t nexprs;
-			struct ast_expr_top *exprs;
+			size_t size;
+			struct ast_toplevel body;
 		} namespace;
 	};
 };
