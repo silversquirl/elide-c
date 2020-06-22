@@ -82,6 +82,7 @@ struct ast_expr {
 		EXPR_FUNC,
 		EXPR_INT_LIT,
 		EXPR_FLOAT_LIT,
+		EXPR_STR_LIT,
 		EXPR_ARR_LIT,
 		EXPR_COMPOSITE_LIT,
 		EXPR_FIELD_ACCESS,
@@ -205,6 +206,8 @@ struct ast_expr {
 			enum float_type float_;
 			long double x;
 		} float_lit;
+
+		const char *str_lit;
 
 		struct {
 			size_t nelems;
