@@ -3,6 +3,10 @@
 #ifndef AST_H
 #define AST_H
 
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+
 enum float_type {
 	F_32,
 	F_64,
@@ -56,7 +60,7 @@ struct val_type {
 			size_t nfields;
 			struct {
 				const char *name;
-				const val_type type;
+				struct val_type *type;
 			} *fields;
 		} composite;
 	};
@@ -69,7 +73,6 @@ struct ref_type {
 
 struct ast_expr {
 	enum {
-		EXPR_BLOCK,
 		EXPR_DECL,
 		EXPR_BINOP,
 		EXPR_UNOP,
@@ -85,23 +88,13 @@ struct ast_expr {
 		EXPR_ARR_LIT,
 		EXPR_COMPOSITE_LIT,
 		EXPR_FIELD_ACCESS,
+		EXPR_LET,
 	} type;
 
 	// NULL if at root
 	struct ast_expr *parent;
 
 	union {
-		struct {
-			size_t nlocals;
-			struct {
-				const char *name;
-				struct ref_type type;
-			} *locals;
-
-			size_t nexprs;
-			struct ast_expr *exprs;
-		} block;
-
 		struct {
 			struct ref_type type;
 			const char *name;
@@ -123,9 +116,16 @@ struct ast_expr {
 				BINOP_EQUAL,
 				BINOP_NEQUAL,
 				BINOP_ASSIGN,
+				BINOP_LSHIFT,
+				BINOP_RSHIFT,
+				BINOP_GT,
+				BINOP_LT,
+				BINOP_GTE,
+				BINOP_LTE,
+				BINOP_SEQOP,
 			} type;
 
-			struct val_ptr *x, *y;
+			struct ast_expr *x, *y;
 		} binop;
 
 		struct {
@@ -143,7 +143,7 @@ struct ast_expr {
 				UNOP_MINUS,
 			} type;
 
-			struct val_ptr *x;
+			struct ast_expr *x;
 		} unop;
 
 		struct {
@@ -224,7 +224,14 @@ struct ast_expr {
 			struct ast_expr *aggr;
 			const char *field;
 		} field_access;
-	}
+
+		struct {
+			const char *name;
+			struct ref_type type;
+			struct ast_expr *val;
+			struct ast_expr *body;
+		} let;
+	};
 };
 
 struct ast_toplevel {
@@ -257,7 +264,7 @@ struct ast_toplevel {
 
 		struct {
 			size_t size;
-			struct ast_toplevel body;
+			struct ast_toplevel *body;
 		} namespace;
 	};
 };
