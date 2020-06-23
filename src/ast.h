@@ -89,6 +89,7 @@ struct ast_expr {
 		EXPR_COMPOSITE_LIT,
 		EXPR_FIELD_ACCESS,
 		EXPR_LET,
+		EXPR_CAST,
 	} type;
 
 	// NULL if at root
@@ -223,6 +224,11 @@ struct ast_expr {
 			struct ast_expr *val;
 			struct ast_expr *body;
 		} let;
+
+		struct {
+			struct val_type type;
+			struct ast_expr *val;
+		} cast;
 	};
 };
 
