@@ -73,7 +73,6 @@ struct ref_type {
 
 struct ast_expr {
 	enum {
-		EXPR_DECL,
 		EXPR_BINOP,
 		EXPR_UNOP,
 		EXPR_CALL,
@@ -96,12 +95,6 @@ struct ast_expr {
 	struct ast_expr *parent;
 
 	union {
-		struct {
-			struct ref_type type;
-			const char *name;
-			struct ast_expr *val;
-		} decl;
-
 		struct {
 			enum {
 				BINOP_ADD,
