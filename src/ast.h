@@ -207,18 +207,10 @@ struct ast_expr {
 		} float_lit;
 
 		struct {
-			size_t nelems;
-			struct ast_expr *elems;
-		} arr_lit;
-
-		struct {
-			// We use a normal val_type here because you explicitly specify
-			// the type of a struct literal and e.g. a `foo` is incompatible
-			// with a `struct { int x }` even if it's newtyped
 			struct val_type type;
-			// Must be as many as there are fields
+			size_t nelems;
 			struct ast_expr *vals;
-		} composite_lit;
+		} aggregate_lit;
 
 		struct {
 			struct ast_expr *aggr;
