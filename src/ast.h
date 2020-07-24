@@ -16,8 +16,6 @@ enum float_type {
 #define I_SIGNED 0x100
 
 enum int_type {
-	BOOL = 1,
-
 	U_8  = 8,
 	U_16 = 16,
 	U_32 = 32,
@@ -39,7 +37,8 @@ struct val_type {
 		TYPE_NEWTYPE,
 		TYPE_STRUCT,
 		TYPE_UNION,
-	} type;
+		TYPE_BOOL,
+	} t;
 
 	union {
 		struct ref_type *ptr;
@@ -86,10 +85,14 @@ struct ast_expr {
 		EXPR_FLOAT_LIT,
 		EXPR_ARR_LIT,
 		EXPR_COMPOSITE_LIT,
+		EXPR_BOOL_LIT,
 		EXPR_FIELD_ACCESS,
 		EXPR_LET,
 		EXPR_CAST,
-	} type;
+		EXPR_IDENT,
+	} t;
+
+	struct val_type type;
 
 	// NULL if at root
 	struct ast_expr *parent;
@@ -117,7 +120,7 @@ struct ast_expr {
 				BINOP_GTE,
 				BINOP_LTE,
 				BINOP_SEQOP,
-			} type;
+			} t;
 
 			struct ast_expr *x, *y;
 		} binop;
@@ -135,7 +138,7 @@ struct ast_expr {
 				UNOP_SIZEOF,
 				UNOP_PLUS,
 				UNOP_MINUS,
-			} type;
+			} t;
 
 			struct ast_expr *x;
 		} unop;
@@ -159,8 +162,6 @@ struct ast_expr {
 		} while_;
 
 		struct {
-			// NULL indicates void
-			struct ast_expr *val;
 			// NULL indicates none
 			const char *lbl;
 		} break_;
@@ -196,9 +197,13 @@ struct ast_expr {
 		} int_lit;
 
 		struct {
-			enum float_type float_;
+			enum float_type type;
 			long double x;
 		} float_lit;
+
+		struct {
+			bool val;
+		} bool_lit;
 
 		struct {
 			struct val_type type;
@@ -216,12 +221,16 @@ struct ast_expr {
 			struct ref_type type;
 			struct ast_expr *val;
 			struct ast_expr *body;
+			// NULL if not present
+			struct ast_expr *deferred;
 		} let;
 
 		struct {
 			struct val_type type;
 			struct ast_expr *val;
 		} cast;
+
+		const char *ident;
 	};
 };
 
