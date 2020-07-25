@@ -203,8 +203,13 @@ struct ast_expr {
 		struct {
 			struct val_type type;
 			size_t nelems;
-			struct ast_expr *vals;
-		} aggregate_lit;
+			struct ast_expr *elems;
+		} composite_lit;
+
+		struct {
+			size_t nelems;
+			struct ast_expr *elems;
+		} array_lit;
 
 		struct {
 			struct ast_expr *aggr;
