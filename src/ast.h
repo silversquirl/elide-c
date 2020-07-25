@@ -198,9 +198,7 @@ struct ast_expr {
 			long double x;
 		} float_lit;
 
-		struct {
-			bool val;
-		} bool_lit;
+		bool bool_lit;
 
 		struct {
 			struct val_type type;
