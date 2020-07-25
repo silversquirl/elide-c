@@ -94,9 +94,6 @@ struct ast_expr {
 
 	struct val_type type;
 
-	// NULL if at root
-	struct ast_expr *parent;
-
 	union {
 		struct {
 			enum {
